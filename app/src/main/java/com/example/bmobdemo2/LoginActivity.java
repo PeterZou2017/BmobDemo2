@@ -1,6 +1,7 @@
 package com.example.bmobdemo2;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -46,8 +47,13 @@ public class LoginActivity extends Activity {
             public void onClick(View v) {
                 MyUser user=new MyUser();
 
-                user.setUsername(userEditText.getText().toString());
-                user.setPassword(pwdEditText.getText().toString());
+               String user1= userEditText.getText().toString();
+                String pwd=pwdEditText.getText().toString();
+
+                if((user1!=null)&&(pwd!=null)){
+
+                    user.setUsername(user1);
+                    user.setPassword(pwd);
 
                 user.signUp(LoginActivity.this, new SaveListener() {
                     @Override
@@ -60,10 +66,13 @@ public class LoginActivity extends Activity {
                     @Override
                     public void onFailure(int i, String s) {
 
-                        Toast.makeText(LoginActivity.this,"注册成功"+s,Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this,"注册失败"+s,Toast.LENGTH_SHORT).show();
 
                     }
                 });
+                }else {
+                    Toast.makeText(LoginActivity.this, "用户名或者密码为空，请重新输入", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -87,7 +96,7 @@ public class LoginActivity extends Activity {
                 user.setUsername(userEditText.getText().toString());
                 user.setPassword(pwdEditText.getText().toString());
 
-                if((user.getUsername()!=null)&&(( pwdEditText.getText().toString())!=null)) {
+
                     user.login(LoginActivity.this, new SaveListener() {
 
 
@@ -95,6 +104,9 @@ public class LoginActivity extends Activity {
                         public void onSuccess() {
 
                             Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent(LoginActivity.this,MainMenuActivity.class);
+                            startActivity(intent);
 
                         }
 
@@ -106,9 +118,7 @@ public class LoginActivity extends Activity {
                         }
                     });
 
-                }else {
-                    Toast.makeText(LoginActivity.this, "用户名或者密码为空，请重新输入", Toast.LENGTH_SHORT).show();
-                }
+
 
             }
         });
