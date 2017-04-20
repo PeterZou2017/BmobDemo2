@@ -1,7 +1,9 @@
-package com.example.bmobdemo2;
+package com.example.bmobdemo2.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.example.bmobdemo2.R;
 
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobQuery;

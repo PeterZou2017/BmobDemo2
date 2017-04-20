@@ -1,4 +1,4 @@
-package com.example.bmobdemo2;
+package com.example.bmobdemo2.entity;
 
 import cn.bmob.v3.BmobUser;
 

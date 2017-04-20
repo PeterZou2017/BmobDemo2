@@ -1,18 +1,16 @@
-package com.example.bmobdemo2;
+package com.example.bmobdemo2.activity;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+
+import com.example.bmobdemo2.R;
 
 public class MainMenuActivity extends Activity {
 
@@ -70,7 +68,7 @@ public class MainMenuActivity extends Activity {
             switch (position) {
                 case 0:
                     // 添加点餐监听器
-             /*       imageView.setOnClickListener(orderLinstener);
+                   imageView.setOnClickListener(orderLinstener);
                     break;
                 case 1:
                     // 并台监听器
@@ -86,7 +84,7 @@ public class MainMenuActivity extends Activity {
                     break;
                 case 4:
                     // 添加更新监听器
-                    imageView.setOnClickListener(updateLinstener);
+                   // imageView.setOnClickListener(updateLinstener);
                     break;
                 case 5:
                     //添加设置监听器
@@ -100,7 +98,7 @@ public class MainMenuActivity extends Activity {
                     // 添加结算监听器
                     imageView.setOnClickListener(payLinstener);
                     break;
-                    */
+
                 default:
                     break;
             }
