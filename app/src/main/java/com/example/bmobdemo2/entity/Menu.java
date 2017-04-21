@@ -9,7 +9,7 @@ import cn.bmob.v3.BmobObject;
 public class Menu extends BmobObject {
 
     private Integer price;
-    private Integer typeId;
+    private MenuType menuType;
     private String name;
     private String pic;
     private String remark;
@@ -39,11 +39,11 @@ public class Menu extends BmobObject {
     public void setRemark(String remark) {
         this.remark = remark;
     }
-    public int getTypeId() {
-        return typeId;
+    public MenuType getmenuType() {
+        return menuType;
     }
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
+    public void setMenuType(MenuType menuType) {
+        this.menuType = menuType;
     }
 
 

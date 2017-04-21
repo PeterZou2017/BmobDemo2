@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.example.bmobdemo2.LoginActivity;
 import com.example.bmobdemo2.R;
 
 public class MainMenuActivity extends Activity {
@@ -130,10 +133,21 @@ public class MainMenuActivity extends Activity {
     View.OnClickListener checkTableLinstener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent intent = new Intent();
-            // 启动查台Activity
-            intent.setClass(MainMenuActivity.this, CheckTableActivity.class);
-            startActivity(intent);
+
+            try {
+
+               // CheckTableActivity.list.clear();
+                Intent intent = new Intent();
+                // 启动查台Activity
+                intent.setClass(MainMenuActivity.this, CheckTableActivity.class);
+                startActivity(intent);
+
+                Toast.makeText(MainMenuActivity.this, "进入查台", Toast.LENGTH_SHORT).show();
+
+            }catch (Exception e){
+                e.printStackTrace();
+                Log.i("1111111","to cehcktable activity fail"+e.getMessage());
+            }
         }
     };
 
