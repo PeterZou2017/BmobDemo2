@@ -15,7 +15,7 @@ public class Order extends BmobObject{
     // 人数
     private Integer personNum;
     // 是否结算
-    private Integer isPay;
+    private Boolean isPay;
     // 备注
     private String remark;
 
@@ -41,10 +41,10 @@ public class Order extends BmobObject{
         this.personNum = personNum;
     }
 
-    public int getIsPay() {
+    public Boolean getIsPay() {
         return isPay;
     }
-    public void setIsPay(int isPay) {
+    public void setIsPay(Boolean isPay) {
         this.isPay = isPay;
     }
 

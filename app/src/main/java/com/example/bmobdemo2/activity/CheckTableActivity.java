@@ -20,6 +20,9 @@ import com.example.bmobdemo2.R;
 import com.example.bmobdemo2.entity.CheckTable;
 import com.example.bmobdemo2.entity.Table;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +37,7 @@ public class CheckTableActivity extends Activity {
     // 餐桌数量
    // private int count;
     // 保存餐桌信息的列表
-    public static List list = new ArrayList();
+  //  private   ArrayList list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,27 +50,81 @@ public class CheckTableActivity extends Activity {
 
         //ArrayList list = new ArrayList();
 
-        new GetTableThread().start();
+        //new GetTableThread().start();
+        //List list=null;
 
-         // getTableList();
+      ArrayList  list= getTableList(gv);
+
+
+
+
+
+
+        Log.i("11111","list="+list);
 
             // 为GridView绑定数据
-            gv.setAdapter(new ImageAdapter(this));
+            gv.setAdapter(new ImageAdapter(this,list));
 
     }
 
-    /*
+
     // 获得餐桌信息列表，信息包括桌号和状态
-    private void getTableList() {
+    private ArrayList getTableList(GridView gv) {
+
+        final ArrayList arrayList=new ArrayList();
 
      //   list.clear();
        //  final List arrayList=new ArrayList();
         //list=null;
 
+           BmobQuery<Table> bmobQuery=new BmobQuery<Table>();
+            bmobQuery.addQueryKeys("num,flag");
+            bmobQuery.findObjects(CheckTableActivity.this, new FindListener<Table>() {
+
+
+                //arrayList=null;
+
+
+                @Override
+                public void onSuccess(List<Table> list1) {
+
+                    //Table table=new Table();
+
+                    Toast.makeText(CheckTableActivity.this,"成功",Toast.LENGTH_SHORT).show();
+
+                    for(Table table:list1){
+
+                        int num=table.getNum();
+                        int flag=table.getFlag();
+
+                        //  Log.i("1111","num="+num);
+                        // Log.i("1111","flag="+flag);
+
+                        CheckTable ct = new CheckTable();
+                        ct.setFlag(flag);
+                        ct.setNum(num);
+                        arrayList.add(ct);
+
+                        Log.i("1111","list"+ct.getNum());
+                        Log.i("1111","list"+ct.getFlag());
+
+                        // Toast.makeText(CheckTableActivity.this,"成功2",Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+
+                @Override
+                public void onError(int i, String s) {
+
+                    Log.i("11111","查询失败"+s);
+
+                }
+        });
 
 
 
-       //return arrayList;
+
+       return arrayList;
 
         //访问网络必须放在子线程中
        // new GetTableThread().start();
@@ -75,55 +132,14 @@ public class CheckTableActivity extends Activity {
 
     }
 
-*/
+/*
     //访问checktableservlet子线程
     public class GetTableThread extends Thread {
 
         public void run() {
 
 
-          BmobQuery<Table> bmobQuery=new BmobQuery<Table>();
-        bmobQuery.addQueryKeys("num,flag");
-        bmobQuery.findObjects(CheckTableActivity.this, new FindListener<Table>() {
 
-
-            //arrayList=null;
-
-            @Override
-            public void onSuccess(List<Table> list1) {
-
-                //Table table=new Table();
-
-                Toast.makeText(CheckTableActivity.this,"成功",Toast.LENGTH_SHORT).show();
-
-                for(Table table:list1){
-
-                    int num=table.getNum();
-                    int flag=table.getFlag();
-
-                  //  Log.i("1111","num="+num);
-                   // Log.i("1111","flag="+flag);
-
-                    CheckTable ct = new CheckTable();
-                    ct.setFlag(flag);
-                    ct.setNum(num);
-                    list.add(ct);
-
-                    Log.i("1111","list"+ct.getNum());
-                    Log.i("1111","list"+ct.getFlag());
-
-                   // Toast.makeText(CheckTableActivity.this,"成功2",Toast.LENGTH_SHORT).show();
-
-                }
-            }
-
-            @Override
-            public void onError(int i, String s) {
-
-                Log.i("11111","查询失败"+s);
-
-            }
-        });
 
 
 
@@ -131,7 +147,7 @@ public class CheckTableActivity extends Activity {
 
 
         }
-    }
+    }*/
 
     static class ViewHolder
     {
@@ -145,12 +161,12 @@ public class CheckTableActivity extends Activity {
     public class ImageAdapter extends BaseAdapter {
         // 上下文
         private Context mContext;
-       // private List list;
+        private ArrayList list;
 
         // 构造方法
-        public ImageAdapter(Context c) {
+        public ImageAdapter(Context c,ArrayList list) {
             mContext = c;
-            //this.list=list;
+            this.list=list;
         }
 
         // 组件个数
@@ -160,12 +176,12 @@ public class CheckTableActivity extends Activity {
 
         // 当前组件
         public Object getItem(int position) {
-            return null;
+            return list.get(position);
         }
 
         // 当前组件id
         public long getItemId(int position) {
-            return 0;
+            return position;
         }
 
         // 获得当前视图
@@ -200,6 +216,8 @@ public class CheckTableActivity extends Activity {
             // 获得TextView对象
           //  holder.tv = (TextView) v.findViewById(R.id.check_tableTextView01);
 
+           // int num=list.get(position).get()
+
             // 获得CheckTable对象
             CheckTable ct = (CheckTable) list.get(position);
 
@@ -215,7 +233,7 @@ public class CheckTableActivity extends Activity {
                 holder.imageView.setImageResource(R.drawable.kongwei);
             }
             // 为TextView设置桌号
-            holder.tv.setText("有" + ct.getNum()+ "人就餐");
+            holder.tv.setText("桌号" + ct.getNum());
 
 
             return convertView;
