@@ -3,6 +3,8 @@ package com.example.bmobdemo2.activity;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -51,6 +53,10 @@ public class PayActivity extends Activity {
     private ArrayAdapter arrayAdapter;
     private ListView mlistview;
 
+    Bundle bundle=new Bundle();
+    // Group group=null;
+    public static ArrayList<Group>groups=null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,9 +75,9 @@ public class PayActivity extends Activity {
 
         // 添加查询点餐信息监听器
         queryBtn.setOnClickListener(queryListener);
-      //  querydetailBtn.setOnClickListener(querydetailListener);
+        querydetailBtn.setOnClickListener(querydetailListener);
         // 添加结算信息监听器
-      //  payBtn.setOnClickListener(payListener);
+       // payBtn.setOnClickListener(payListener);
 
         mHashmaps = new ArrayList<HashMap<String, Object>>();
         map = new HashMap<String, Object>();
@@ -96,18 +102,22 @@ public class PayActivity extends Activity {
                         break;
                     }
                     case 1: {
-                        List<OrderDetail> list = (List<OrderDetail>) msg.obj;
-                        Log.i("22222", "22444" + list.size());
-                        for (OrderDetail detail : list) {
-                            String menuId = detail.getMenu().getObjectId();
-                            int num = detail.getNum();
-                            // String name= MENU.class.getName();
-                            Log.i("22222", "22" + num);
-                            // int price=getprice(menuId);
+                        groups = bundle.getParcelableArrayList("mylist");
+
+                        for (Group group : groups){
+                            String order=group.getOrder().getObjectId();
+                            String menu=group.getMenu().getObjectId();
+                            int num=group.getNum();
+                            String remark=group.getRemark();
+                            Log.i("777777","order detail="+order+"  "+menu+"  "+num+"  "+remark);
+                        }
+
+                            Log.i("66666","group size="+groups.size());
+
 
                         }
                         break;
-                    }
+
                     default:
                         break;
 
@@ -189,33 +199,6 @@ public class PayActivity extends Activity {
             String orderId = orderIdEt.getText().toString();
 
 
-            BmobQuery<OrderDetail> queryordertail = new BmobQuery<OrderDetail>();
-            queryordertail.addWhereEqualTo("remark", "辣的");
-            queryordertail.findObjects(PayActivity.this, new FindListener<OrderDetail>() {
-                @Override
-                public void onSuccess(List<OrderDetail> list) {
-
-                    Toast.makeText(PayActivity.this, "查询2成功"+list.size(), Toast.LENGTH_SHORT).show();
-
-                    Log.i("444","444="+list.size());
-
-                   // Message msg=Message.obtain();
-                   // msg.what=1;
-                   // msg.obj=(OrderDetail)list;
-
-                  //  handler.sendMessage(msg);
-
-                }
-
-                @Override
-                public void onError(int i, String s) {
-
-                }
-            });
-
-
-/*
-
             BmobQuery<Order> queryorder = new BmobQuery<Order>();
             queryorder.getObject(PayActivity.this, orderId, new GetListener<Order>() {
                 @Override
@@ -229,39 +212,7 @@ public class PayActivity extends Activity {
 
                     handler.sendMessage(msg);
 
-/*
-
-                    try {
-
-                       // ArrayList list = new ArrayList();
-
-                      //  String user = order.getUser().getUsername();
-                        int tablenum = order.getTable().getNum();
-                        String tableId=order.getTable().getObjectId();
-                        int personNum = order.getPersonNum();
-                        Boolean isPay = order.getIsPay();
-
-                      //  String[] str=new String[]{"用户名:"+user,"桌号:"+tableId,"人数:"+personNum,"是否支付"+isPay};
-                        Log.i("222","str="+personNum+isPay+tableId+tablenum);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                        Log.i("11111","query order fail="+e.getMessage());
-                    }
-                       // Log.i("333","str="+);
-
-                       // Log.i("1111", "user=" + user);
-
-                       // list.add(user);
-                       // list.add(tablenum);
-
-
-                      //  ArrayAdapter<String> arrayAdapter = new ArrayAdapter(PayActivity.this, android.R.layout.simple_list_item_1,str);
-
-                       // mlistview.setAdapter(arrayAdapter);
-
-
                 }
-
 
                     @Override
                     public void onFailure ( int i, String s){
@@ -274,7 +225,7 @@ public class PayActivity extends Activity {
 
 
 
-*/
+
 
               /*  BmobQuery<OrderDetail> queryordertail = new BmobQuery<OrderDetail>();
                 queryordertail.addWhereEqualTo("num", "2");
@@ -316,7 +267,7 @@ public class PayActivity extends Activity {
             }
         };
 
-/*
+
     View.OnClickListener querydetailListener=new View.OnClickListener(){
 
         @Override
@@ -326,20 +277,23 @@ public class PayActivity extends Activity {
             String orderId = orderIdEt.getText().toString();
 
             BmobQuery<OrderDetail> queryordertail = new BmobQuery<OrderDetail>();
-            queryordertail.addWhereEqualTo("orderId", "ZR25OOOY");
+            queryordertail.addWhereEqualTo("order", orderId);
             queryordertail.findObjects(PayActivity.this, new FindListener<OrderDetail>() {
                 @Override
-                public void onSuccess(List<OrderDetail> list) {
+                public void onSuccess(List<OrderDetail> groups) {
 
-                    Toast.makeText(PayActivity.this, "查询2成功"+list.size(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PayActivity.this, "查询2成功"+groups.size(), Toast.LENGTH_SHORT).show();
 
-                    Log.i("444","444="+list.size());
+                    Log.i("444","444="+groups.size());
 
-                    Message msg=Message.obtain();
+                    Message msg=handler.obtainMessage();
+
                     msg.what=1;
-                    msg.obj=(OrderDetail)list;
 
+                    bundle.putParcelableArrayList("mylist",(ArrayList)groups);
+                    msg.setData(bundle);
                     handler.sendMessage(msg);
+
 
                 }
 
@@ -352,7 +306,87 @@ public class PayActivity extends Activity {
         }
     };
 
-    */
+
+    public static class Group implements Parcelable
+    {
+        private Order order;
+        private Menu menu;
+        private int num;
+        private String remark;
+
+        public Group(){
+
+        }
+
+        public Group(Order order,Menu menu,int num,String remark)
+        {
+            this.order=order;
+            this.menu=menu;
+            this.num=num;
+            this.remark=remark;
+        }
+
+        public void setOrder(Order order){
+            this.order=order;
+        }
+        public Order getOrder(){
+            return this.order;
+        }
+
+        public void setMenu(Menu menu){
+            this.menu=menu;
+        }
+        public Menu getMenu(){
+            return this.menu;
+        }
+
+        public void setNum(int num){
+            this.num=num;
+        }
+        public int getNum(){
+            return this.num;
+        }
+
+        public void setRemark(String remark){
+            this.remark=remark;
+        }
+        public String getRemark(){
+            return this.remark;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeValue(order);
+            dest.writeValue(menu);
+            dest.writeInt(num);
+            dest.writeString(remark);
+
+        }
+
+        public  final Parcelable.Creator<Group>CREATOR=new Creator<Group>() {
+            @Override
+            public Group createFromParcel(Parcel source) {
+                Group mgroup=new Group();
+                mgroup.order=(Order)source.readValue(Order.class.getClassLoader());
+                mgroup.menu=(Menu) source.readValue(Menu.class.getClassLoader());
+                mgroup.num=source.readInt();
+                mgroup.remark=source.readString();
+                return mgroup;
+            }
+
+            @Override
+            public Group[] newArray(int size) {
+                return new Group[size];
+            }
+        };
+    }
+
+
 
 
     // 结算监听器
