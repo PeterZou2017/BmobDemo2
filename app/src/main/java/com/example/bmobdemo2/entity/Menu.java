@@ -1,6 +1,10 @@
 package com.example.bmobdemo2.entity;
 
+import com.example.bmobdemo2.activity.PayActivity;
+
 import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.listener.GetListener;
 
 /**
  * Created by Administrator on 2017/4/20.
@@ -18,6 +22,8 @@ public class Menu extends BmobObject {
     public String getName() {
         return name;
     }
+
+
     public void setName(String name) {
         this.name = name;
     }
