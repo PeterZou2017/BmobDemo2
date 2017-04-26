@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.listener.FindListener;
@@ -48,8 +49,10 @@ public class PayActivity extends Activity {
     private Handler handler2;
 
     private List<HashMap<String,Object>> mHashmaps;
+    private static List<HashMap<String,Object>> mHashmaps2=null;
 
     private HashMap<String,Object>map;
+    private HashMap<String,Object>map2;
 
     private ArrayAdapter arrayAdapter;
     private ListView mlistview;
@@ -85,6 +88,12 @@ public class PayActivity extends Activity {
         // 添加结算信息监听器
        // payBtn.setOnClickListener(payListener);
 
+        mHashmaps=new ArrayList<HashMap<String, Object>>();
+        map=new HashMap<String, Object>();
+
+
+
+
 
 
 
@@ -108,20 +117,20 @@ public class PayActivity extends Activity {
                     }
                     case 1: {
                         details = bundle.getParcelableArrayList("mylist");
-
-
+                        mHashmaps2 = new ArrayList<HashMap<String, Object>>();
 
                         for (OrderDetail detail : details) {
                             String order = detail.getOrder().getObjectId();
                             String menuId = detail.getMenu().getObjectId();
                              int num = detail.getNum();
 
-                            mHashmaps = new ArrayList<HashMap<String, Object>>();
-                            map = new HashMap<String, Object>();
-                            map.put("menuId",menuId);
-                            map.put("num",num);
+                            map2 = new HashMap<String, Object>();
 
-                            mHashmaps.add(map);
+
+                            map2.put("menuId",menuId);
+                            map2.put("num",num);
+
+                            mHashmaps2.add(map2);
 
                             Log.i("777777", "order detail=" + order + "  " + menuId + "  " + num );
 
@@ -129,6 +138,7 @@ public class PayActivity extends Activity {
                         }
 
                         Log.i("66666", "group size=" + details.size());
+
 
 
                         break;
@@ -145,37 +155,6 @@ public class PayActivity extends Activity {
                 }
 
             };
-
-    }
-
-
-
-    private void getMenu(String id){
-
-        BmobQuery<Menu> query=new BmobQuery<Menu>();
-        query.getObject(PayActivity.this, id, new GetListener<Menu>() {
-            @Override
-            public void onSuccess(Menu menu) {
-
-                Log.i("999", "getmenu success" );
-
-                Message msg=handler2.obtainMessage();
-                msg.what=2;
-                msg.obj=menu;
-
-                handler2.sendMessage(msg);
-
-                Log.i("777", "query menu success" );
-            }
-
-            @Override
-            public void onFailure(int i, String s) {
-
-                Log.i("000", "getmenu fail"+s );
-
-            }
-        });
-
 
     }
 
@@ -402,8 +381,60 @@ public class PayActivity extends Activity {
         @Override
         public void onClick(View v) {
 
+            Iterator iterator=mHashmaps2.iterator();
+
+            while (iterator.hasNext()){
+                Map map=(Map)iterator.next();
+                String menuId=(String)map.get("menuId");
+                int num=(int)map.get("num");
+                Log.i("999", "querymenudetail menuId="+menuId+"  "+num);
+
+                new QuerymenuThread(menuId).start();
+
+            }
+
+
         }
     };
+
+    private class QuerymenuThread extends Thread{
+
+        String menuId;
+
+        public QuerymenuThread(String menuId){
+            this.menuId=menuId;
+        }
+
+        @Override
+        public void run() {
+
+            BmobQuery<Menu> query = new BmobQuery<Menu>();
+            query.getObject(PayActivity.this, menuId, new GetListener<Menu>() {
+                @Override
+                public void onSuccess(Menu menu) {
+
+                    Log.i("999", "querymenudetail success"+menu.getName());
+
+                    // Message msg = handler2.obtainMessage();
+                    //  msg.what = 2;
+                    // msg.obj = menu;
+
+                    // handler2.sendMessage(msg);
+
+                    // Log.i("777", "query menu success");
+
+                }
+
+                @Override
+                public void onFailure(int i, String s) {
+
+                    Log.i("000", "querymenudetail fail" + s);
+
+                }
+            });
+
+        }
+    }
 
 
     /*
