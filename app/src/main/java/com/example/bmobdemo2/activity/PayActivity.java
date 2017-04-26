@@ -40,11 +40,12 @@ public class PayActivity extends Activity {
     // 显示点餐信息WebView
     private WebView wv;
     // 查询点餐信息按钮和结算按钮
-    private Button queryBtn,querydetailBtn,payBtn;
+    private Button queryBtn,querydetailBtn,querydetailmenuBtn,payBtn;
     // 订单编号
     private EditText orderIdEt;
 
-    private Handler handler;
+    private Handler handler1;
+    private Handler handler2;
 
     private List<HashMap<String,Object>> mHashmaps;
 
@@ -55,7 +56,10 @@ public class PayActivity extends Activity {
 
     Bundle bundle=new Bundle();
     // Group group=null;
-    public static ArrayList<Group>groups=null;
+    public static ArrayList<OrderDetail>details=null;
+
+    private static String menuname;
+    private static int price;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,7 @@ public class PayActivity extends Activity {
         // 实例化查询按钮
         queryBtn = (Button) findViewById(R.id.pay_query_Button01);
         querydetailBtn=(Button)findViewById(R.id.pay_query_Button02);
+        querydetailmenuBtn=(Button)findViewById(R.id.pay_query_Button03);
         // 实例化结算按钮
         payBtn = (Button) findViewById(R.id.pay_Button01);
         // 实例化订单编号编辑框
@@ -76,14 +81,14 @@ public class PayActivity extends Activity {
         // 添加查询点餐信息监听器
         queryBtn.setOnClickListener(queryListener);
         querydetailBtn.setOnClickListener(querydetailListener);
+        querydetailmenuBtn.setOnClickListener(querydetailmenuListener);
         // 添加结算信息监听器
        // payBtn.setOnClickListener(payListener);
 
-        mHashmaps = new ArrayList<HashMap<String, Object>>();
-        map = new HashMap<String, Object>();
 
 
-        handler = new Handler() {
+
+        handler1 = new Handler() {
             public void handleMessage(Message msg) {
 
                 switch (msg.what) {
@@ -102,21 +107,33 @@ public class PayActivity extends Activity {
                         break;
                     }
                     case 1: {
-                        groups = bundle.getParcelableArrayList("mylist");
+                        details = bundle.getParcelableArrayList("mylist");
 
-                        for (Group group : groups){
-                            String order=group.getOrder().getObjectId();
-                            String menu=group.getMenu().getObjectId();
-                            int num=group.getNum();
-                            String remark=group.getRemark();
-                            Log.i("777777","order detail="+order+"  "+menu+"  "+num+"  "+remark);
+
+
+                        for (OrderDetail detail : details) {
+                            String order = detail.getOrder().getObjectId();
+                            String menuId = detail.getMenu().getObjectId();
+                             int num = detail.getNum();
+
+                            mHashmaps = new ArrayList<HashMap<String, Object>>();
+                            map = new HashMap<String, Object>();
+                            map.put("menuId",menuId);
+                            map.put("num",num);
+
+                            mHashmaps.add(map);
+
+                            Log.i("777777", "order detail=" + order + "  " + menuId + "  " + num );
+
+                            Log.i("888", "menu detail=" + menuname + "  " + price  );
                         }
 
-                            Log.i("66666","group size="+groups.size());
+                        Log.i("66666", "group size=" + details.size());
 
 
-                        }
                         break;
+                    }
+
 
                     default:
                         break;
@@ -131,23 +148,94 @@ public class PayActivity extends Activity {
 
     }
 
-    /*
 
-    private class MENU{
 
-        private Integer price;
+    private void getMenu(String id){
+
+        BmobQuery<Menu> query=new BmobQuery<Menu>();
+        query.getObject(PayActivity.this, id, new GetListener<Menu>() {
+            @Override
+            public void onSuccess(Menu menu) {
+
+                Log.i("999", "getmenu success" );
+
+                Message msg=handler2.obtainMessage();
+                msg.what=2;
+                msg.obj=menu;
+
+                handler2.sendMessage(msg);
+
+                Log.i("777", "query menu success" );
+            }
+
+            @Override
+            public void onFailure(int i, String s) {
+
+                Log.i("000", "getmenu fail"+s );
+
+            }
+        });
+
+
+    }
+
+/*
+    private class GetMenu{
+
+        private String id;
         private String name;
-        private String pic;
+        private int price;
         private String remark;
 
-        public String getName(String menuId) {
-            BmobQuery<Menu> querymenu = new BmobQuery<Menu>();
-            querymenu.getObject(PayActivity.this, menuId, new GetListener<Menu>() {
+
+
+        public GetMenu(String id){
+            this.id=id;
+            //this.name=name;
+           // this.price=price;
+           // this.remark=remark;
+        }
+
+        public void setId(String id){
+            this.id=id;
+        }
+
+        public String getName(){
+            return name;
+
+        }
+
+        public int getPrice(){
+          return price;
+
+        }
+
+
+        handler2 = new Handler() {
+            public void handleMessage (Message msg){
+
+                switch (msg.what) {
+                    case 0:
+                }
+            }
+        }
+
+
+        private void querymenu()
+        {
+
+            BmobQuery<Menu> query = new BmobQuery<Menu>();
+            query.getObject(PayActivity.this, id, new GetListener<Menu>() {
                 @Override
                 public void onSuccess(Menu menu) {
 
-                    String name=menu.getName();
+                    Message msg=Message.obtain();
+                    msg.what=2;
+                    msg.obj=menu;
 
+                    handler.sendMessage(msg);
+
+                    Log.i("777", "name=" + name);
                 }
 
                 @Override
@@ -155,13 +243,16 @@ public class PayActivity extends Activity {
 
                 }
             });
-            return name;
+
         }
+
+
 
 
     }
 
     */
+
 
 
 
@@ -206,11 +297,11 @@ public class PayActivity extends Activity {
 
                     Toast.makeText(PayActivity.this, "查询成功"+order.getPersonNum(), Toast.LENGTH_SHORT).show();
 
-                    Message msg=Message.obtain();
+                    Message msg=handler1.obtainMessage();
                     msg.what=0;
                     msg.obj=order;
 
-                    handler.sendMessage(msg);
+                    handler1.sendMessage(msg);
 
                 }
 
@@ -280,19 +371,19 @@ public class PayActivity extends Activity {
             queryordertail.addWhereEqualTo("order", orderId);
             queryordertail.findObjects(PayActivity.this, new FindListener<OrderDetail>() {
                 @Override
-                public void onSuccess(List<OrderDetail> groups) {
+                public void onSuccess(List<OrderDetail> details) {
 
-                    Toast.makeText(PayActivity.this, "查询2成功"+groups.size(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PayActivity.this, "查询2成功"+details.size(), Toast.LENGTH_SHORT).show();
 
-                    Log.i("444","444="+groups.size());
+                    Log.i("444","444="+details.size());
 
-                    Message msg=handler.obtainMessage();
+                    Message msg=handler1.obtainMessage();
 
                     msg.what=1;
 
-                    bundle.putParcelableArrayList("mylist",(ArrayList)groups);
+                    bundle.putParcelableArrayList("mylist",(ArrayList<OrderDetail>)details);
                     msg.setData(bundle);
-                    handler.sendMessage(msg);
+                    handler1.sendMessage(msg);
 
 
                 }
@@ -306,6 +397,16 @@ public class PayActivity extends Activity {
         }
     };
 
+
+    View.OnClickListener querydetailmenuListener=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+        }
+    };
+
+
+    /*
 
     public static class Group implements Parcelable
     {
@@ -385,6 +486,8 @@ public class PayActivity extends Activity {
             }
         };
     }
+
+    */
 
 
 

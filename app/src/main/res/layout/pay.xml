@@ -21,17 +21,36 @@
             android:id="@+id/pay_order_number_EditText01"
             android:layout_width="380px"
             android:layout_height="wrap_content"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
         <Button
-            android:text="查询"
+            android:text="查询订单"
             android:id="@+id/pay_query_Button01"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
 
         <Button
             android:text="查询明细"
             android:id="@+id/pay_query_Button02"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <Button
+            android:text="查询菜单"
+            android:id="@+id/pay_query_Button03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
 
     </LinearLayout>
    <!--- <WebView
